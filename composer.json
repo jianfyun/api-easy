@@ -1,0 +1,30 @@
+{
+    "name": "api-easy/api-easy",
+    "description": "Simple RESTful API Frame",
+    "keywords": ["API", "Frame", "REST"],
+    "version": "0.1.0",
+    "type": "project",
+    "require": {
+        "php": ">=5.5",
+        "ext-SPL": "*",
+        "psr-easy/http-message": ">=0.1.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": ">=4.5.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "ApiEasy\\": "src/ApiEasy/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "ApiEasy\\Tests\\": "tests/ApiEasy/Tests/"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "config": {
+        "preferred-install": "dist"
+    }
+}
