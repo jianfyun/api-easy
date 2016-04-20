@@ -20,7 +20,7 @@ class Response extends PsrResponse
      * @return self
      * @throw \UnexpectedValueException if JSON encode fails.
      */
-    public function withJsonBody(array $value)
+    public function withJson(array $value)
     {
         $json = json_encode($value);
 
@@ -29,6 +29,7 @@ class Response extends PsrResponse
             throw new \UnexpectedValueException($message);
         }
 
+        $this->withHeader('Content-Type', 'application/json');
         $stream = new Stream('php://memory', 'rw');
         $stream->write($json);
         $stream->rewind();

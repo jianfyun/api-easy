@@ -166,11 +166,14 @@ class ApiEasy
 
         if ($match['callback'] == null) {
             $this->response->withStatus(404);
-        } else {
-            $this->request->withQueryParams($match['params']);
-            $this->dispatcher->dispatch($match['callback'], $this->request, $this->response);
+            return;
         }
 
+        foreach ($match['params'] as $name => $value) {
+            $this->request->withAttribute($name, $value);
+        }
+
+        $this->dispatcher->dispatch($match['callback'], $this->request, $this->response);
         $this->renderer->render($this->response);
     }
 
