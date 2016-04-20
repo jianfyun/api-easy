@@ -7,9 +7,9 @@ use ApiEasy\Http\Message\Response;
 
 /**
  * Representation of a callback dispatcher.
- * 
+ *
  * @uses DispatcherInterface
- * @package 
+ * @package
  */
 class Dispatcher implements DispatcherInterface
 {
@@ -40,16 +40,16 @@ class Dispatcher implements DispatcherInterface
      * @param  Request  $request  The HTTP Request instance.
      * @param  Response $response The HTTP Response instance.
      * @access protected
-     * @return Response The HTTP Response instance.
+     * @return void
      * @throw \BadFunctionCallException if the callback is not valid function.
      * @throw \BadMethodCallException if the callback is not valid method.
-     * @throw \UnexpectedValueException if the return of the callback is not instance of Response.
      */
     public function dispatch($callback, Request $request, Response $response)
     {
         if (is_array($callback) && count($callback) == 2) {
             if (is_string($callback[0])) {
-                $controller = new $callback[0]();
+                $className  = $callback[0];
+                $controller = new $className();
             }
 
             if (!$controller instanceof ControllerInterface) {
@@ -60,19 +60,33 @@ class Dispatcher implements DispatcherInterface
                 throw new \BadMethodCallException('preDispatch or postDispatch can not be callback');
             }
 
-            $response = call_user_func_array([$controller, 'preDispatch'], [$request, $response]);
-            $response = call_user_func_array([$controller, $callback[1]], [$request, $response]);
-            $response = call_user_func_array([$controller, 'postDispatch'], [$request, $response]);
+            $this->execute([$controller, 'preDispatch'], $request, $response);
+            $this->execute([$controller, $callback[1]], $request, $response);
+            $this->execute([$controller, 'postDispatch'], $request, $response);
         } elseif ($callback instanceof \Closure) {
             $response = call_user_func_array($callback, [$request, $response]);
         } else {
             throw new \BadFunctionCallException('Callback is neither Controller method nor Closure');
         }
+    }
 
-        if (!$response instanceof Response) {
-            throw new \UnexpectedValueException('Callback return is not instance of Response');
+    /**
+     * Execute thie provided method of Controller instance.
+     *
+     * @param  array    $callback The method of Controller instance.
+     * @param  Request  $request  The HTTP Request instance.
+     * @param  Response $response The HTTP Response instance.
+     * @access protected
+     * @return void
+     * @throw \UnexpectedValueException if the return of the callback is not instance of Response.
+     */
+    protected function execute(array $callback, Request $request, Response $response)
+    {
+        call_user_func_array($callback, [$request, $response]);
+
+        if (!$request instanceof Request || !$response instanceof Response) {
+            $message = get_class($callback[0]) . "::{$callback[1]} is not allowed to modify Request or Response type";
+            throw new \UnexpectedValueException($message);
         }
-
-        return $response;
     }
 }

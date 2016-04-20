@@ -1,6 +1,7 @@
 <?php
 namespace ApiEasy;
 
+use ApiEasy\Dispatcher\Dispatcher;
 use ApiEasy\Dispatcher\DispatcherInterface;
 use ApiEasy\Http\Message\Request;
 use ApiEasy\Http\Message\Response;
@@ -167,7 +168,7 @@ class ApiEasy
             $this->response->withStatus(404);
         } else {
             $this->request->withQueryParams($match['params']);
-            $this->response = $this->dispatcher->dispatch($match['callback'], $this->request, $this->response);
+            $this->dispatcher->dispatch($match['callback'], $this->request, $this->response);
         }
 
         $this->renderer->render($this->response);

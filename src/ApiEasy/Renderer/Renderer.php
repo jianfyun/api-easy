@@ -1,6 +1,8 @@
 <?php
 namespace ApiEasy\Renderer;
 
+use ApiEasy\Http\Message\Response;
+
 /**
  * Representation of an HTTP response renderer.
  * 
