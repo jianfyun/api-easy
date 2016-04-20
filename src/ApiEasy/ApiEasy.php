@@ -6,8 +6,8 @@ use ApiEasy\Http\Message\Request;
 use ApiEasy\Http\Message\Response;
 use ApiEasy\Renderer\Renderer;
 use ApiEasy\Renderer\RendererInterface;
-use ApiEasy\Route\Router;
-use ApiEasy\Route\RouterInterface;
+use ApiEasy\Router\Router;
+use ApiEasy\Router\RouterInterface;
 
 /**
  * Representation of an API application
