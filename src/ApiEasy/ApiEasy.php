@@ -103,7 +103,7 @@ class ApiEasy
      */
     public function post($path, $callback)
     {
-        $this->router->withRule('POST', $path, $callback);
+        $this->addRoute('POST', $path, $callback);
     }
 
     /**
@@ -116,7 +116,7 @@ class ApiEasy
      */
     public function put($path, $callback)
     {
-        $this->router->withRule('PUT', $path, $callback);
+        $this->addRoute('PUT', $path, $callback);
     }
 
     /**
@@ -129,7 +129,7 @@ class ApiEasy
      */
     public function delete($uri, $callback)
     {
-        $this->router->withRule('DELETE', $uri, $callback);
+        $this->addRoute('DELETE', $uri, $callback);
     }
 
     /**
@@ -142,7 +142,7 @@ class ApiEasy
      */
     public function options($uri, $callback)
     {
-        $this->router->withRule('OPTIONS', $uri, $callback);
+        $this->addRoute('OPTIONS', $uri, $callback);
     }
 
     /**
