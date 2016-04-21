@@ -49,7 +49,6 @@ class Dispatcher implements DispatcherInterface
         if (is_array($callback) && count($callback) == 2) {
             if (is_string($callback[0])) {
                 $className  = $callback[0];
-                var_dump($className);exit;
                 $controller = new $className();
             }
 
