@@ -1,7 +1,7 @@
 # api-easy
 
 ## Introduction
-This is a simple, lightweight REST API framework for PHP.
+This is a simple, lightweight RESTful API framework for PHP.
 
 ## Requirements
 * HTTP Server (example: Nginx)
