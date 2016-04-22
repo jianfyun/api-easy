@@ -161,7 +161,7 @@ class ApiEasy
             return;
         }
 
-        $this->dispatch($match['callback']);
+        $this->dispatch($match);
         $this->render();
     }
 
@@ -187,17 +187,17 @@ class ApiEasy
     /**
      * Dispatch and execute the callback with the Request and Response as parameters.
      *
-     * @param  mixed $callback Callback.
+     * @param  array $match The matched callback and URI path parameters.
      * @access public
      * @return void
      */
-    public function dispatch($callback)
+    public function dispatch(array $match)
     {
         foreach ($match['params'] as $name => $value) {
             $this->request->withAttribute($name, $value);
         }
 
-        $this->dispatcher->dispatch($callback, $this->request, $this->response);
+        $this->dispatcher->dispatch($match['callback'], $this->request, $this->response);
     }
 
     /**
