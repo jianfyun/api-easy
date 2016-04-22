@@ -154,6 +154,25 @@ class ApiEasy
      */
     public function run()
     {
+        $match = $this->route();
+
+        if ($match['callback'] == null) {
+            $this->response->withStatus(404);
+            return;
+        }
+
+        $this->dispatch($match['callback']);
+        $this->render();
+    }
+
+    /**
+     * Find the callback for the request URI.
+     *
+     * @access public
+     * @return array The matched callback and URI path parameters.
+     */
+    public function route()
+    {
         $method = $this->request->getMethod();
         $uri    = $this->request->getUri();
 
@@ -162,18 +181,33 @@ class ApiEasy
         }
 
         $path  = $uri->getPath();
-        $match = $this->router->route($method, $path);
+        return $this->router->route($method, $path);
+    }
 
-        if ($match['callback'] == null) {
-            $this->response->withStatus(404);
-            return;
-        }
-
+    /**
+     * Dispatch and execute the callback with the Request and Response as parameters.
+     *
+     * @param  mixed $callback Callback.
+     * @access public
+     * @return void
+     */
+    public function dispatch($callback)
+    {
         foreach ($match['params'] as $name => $value) {
             $this->request->withAttribute($name, $value);
         }
 
-        $this->dispatcher->dispatch($match['callback'], $this->request, $this->response);
+        $this->dispatcher->dispatch($callback, $this->request, $this->response);
+    }
+
+    /**
+     * Render the response of the HTTP request.
+     *
+     * @access public
+     * @return void
+     */
+    public function render()
+    {
         $this->renderer->render($this->response);
     }
 
