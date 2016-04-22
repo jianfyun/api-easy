@@ -15,7 +15,7 @@ class Router implements RouterInterface
      * @var array
      * @access protected
      */
-    protected $exact= [];
+    protected $exact = [];
 
     /**
      * Fuzzy route rules.
@@ -26,6 +26,14 @@ class Router implements RouterInterface
     protected $fuzzy = [];
 
     /**
+     * Asterisk route rules.
+     *
+     * @var array
+     * @access protected
+     */
+    protected $asterisk = [];
+
+    /**
      * __construct
      *
      * @access public
@@ -33,8 +41,9 @@ class Router implements RouterInterface
      */
     public function __construct()
     {
-        $this->exact = [];
-        $this->fuzzy = [];
+        $this->exact    = [];
+        $this->fuzzy    = [];
+        $this->asterisk = [];
     }
 
     /**
@@ -48,6 +57,11 @@ class Router implements RouterInterface
      */
     public function withRule($method, $path, $callback)
     {
+        if ($path == '*') {
+            $this->asterisk[$method] = $callback;
+            return $this;
+        }
+
         $varPos = strpos($path, '{');
 
         if (false === $varPos) {
@@ -81,16 +95,19 @@ class Router implements RouterInterface
             }
         }
 
-        if (!is_array($this->fuzzy[$method])) {
-            return $match;
+        if (is_array($this->fuzzy[$method])) {
+            foreach ($this->fuzzy[$method] as $prefix => $rules) {
+                if (0 !== strpos($path, $prefix)) {
+                    continue;
+                }
+
+                $match = $this->matchFuzzy($path, $rules);
+            }
         }
 
-        foreach ($this->fuzzy[$method] as $prefix => $rules) {
-            if (0 !== strpos($path, $prefix)) {
-                continue;
-            }
-
-            $match = $this->matchFuzzy($path, $rules);
+        if ($match['callback'] == null && isset($this->asterisk[$method])) {
+            $match['callback'] = $this->asterisk[$method];
+            return $match;
         }
 
         return $match;
