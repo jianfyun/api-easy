@@ -178,6 +178,54 @@ class ApiEasy
     }
 
     /**
+     * Retrieves the HTTP Request instance.
+     *
+     * @access public
+     * @return Request The HTTP Request instance.
+     */
+    public function getRequest()
+    {
+        return $this->request;
+    }
+
+    /**
+     * Return an instance with the provided request.
+     *
+     * @param  Request $request The HTTP Request instance.
+     * @access public
+     * @return self
+     */
+    public function withRequest(Request $request)
+    {
+        $this->request = $request;
+        return $this;
+    }
+
+    /**
+     * Retrieves the HTTP Response instance.
+     *
+     * @access public
+     * @return Response The HTTP Response instance.
+     */
+    public function getResponse()
+    {
+        return $this->response;
+    }
+
+    /**
+     * Return an instance with the provided response.
+     *
+     * @param  Response $response The HTTP Response instance.
+     * @access public
+     * @return self
+     */
+    public function withResponse(Response $response)
+    {
+        $this->response = $response;
+        return $this;
+    }
+
+    /**
      * Retrieves the router.
      *
      * @access public
@@ -189,7 +237,7 @@ class ApiEasy
     }
 
     /**
-     * Return an instance with the router.
+     * Return an instance with the provided router.
      *
      * @param  RouterInterface $router The router instance.
      * @access public
@@ -213,7 +261,7 @@ class ApiEasy
     }
 
     /**
-     * Return an instance with the dispatcher.
+     * Return an instance with the provided dispatcher.
      *
      * @param  DispatcherInterface $dispatcher The dispatcher instance.
      * @access public
@@ -237,7 +285,7 @@ class ApiEasy
     }
 
     /**
-     * Return an instance with the renderer.
+     * Return an instance with the provided renderer.
      *
      * @param  RendererInterface $renderer The renderer instance.
      * @access public
@@ -261,7 +309,7 @@ class ApiEasy
     }
 
     /**
-     * Return an instance with the callback namespace prefix.
+     * Return an instance with the provided callback namespace prefix.
      *
      * @param  string $callbackNs The callback namespace prefix.
      * @access public
