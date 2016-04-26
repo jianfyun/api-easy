@@ -29,7 +29,7 @@ interface DispatcherInterface
      * @param  Request  $request  The HTTP Request instance.
      * @param  Response $response The HTTP Response instance.
      * @access protected
-     * @return Response The HTTP Response instance.
+     * @return void
      * @throw \BadFunctionCallException if the callback is not valid function.
      * @throw \BadMethodCallException if the callback is not valid method.
      * @throw \UnexpectedValueException if the return of the callback is not instance of Response.

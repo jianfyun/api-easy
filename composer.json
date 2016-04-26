@@ -2,7 +2,7 @@
     "name": "api-easy/api-easy",
     "description": "Simple RESTful API Frame",
     "keywords": ["API", "Frame", "REST"],
-    "version": "0.1.8",
+    "version": "0.1.9",
     "type": "project",
     "require": {
         "php": ">=5.5",

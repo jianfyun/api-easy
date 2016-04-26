@@ -53,15 +53,15 @@ class Dispatcher implements DispatcherInterface
             }
 
             if (!$controller instanceof ControllerInterface) {
-                throw new \BadMethodCallException('Controller is not instance of AbstractController');
+                throw new \BadMethodCallException("$className is not instance of ControllerInterface");
             }
 
             if ($callback[1] == 'preDispatch' || $callback[1] == 'postDispatch') {
                 throw new \BadMethodCallException('preDispatch or postDispatch can not be callback');
             }
 
-            $this->execute([$controller, 'preDispatch'], $request, $response);
-            $this->execute([$controller, $callback[1]], $request, $response);
+            $this->execute([$controller, 'preDispatch'], $request, $response) &&
+            $this->execute([$controller, $callback[1]], $request, $response) &&
             $this->execute([$controller, 'postDispatch'], $request, $response);
         } elseif ($callback instanceof \Closure) {
             $response = call_user_func_array($callback, [$request, $response]);
@@ -77,16 +77,23 @@ class Dispatcher implements DispatcherInterface
      * @param  Request  $request  The HTTP Request instance.
      * @param  Response $response The HTTP Response instance.
      * @access protected
-     * @return void
+     * @return bool     Return ture to process the remaining methods; otherwise, skip the remaining methods.
      * @throw \UnexpectedValueException if the return of the callback is not instance of Response.
      */
     protected function execute(array $callback, Request $request, Response $response)
     {
-        call_user_func_array($callback, [$request, $response]);
+        $result = call_user_func_array($callback, [$request, $response]);
 
         if (!$request instanceof Request || !$response instanceof Response) {
             $message = get_class($callback[0]) . "::{$callback[1]} is not allowed to modify Request or Response type";
             throw new \UnexpectedValueException($message);
         }
+
+        if ($result instanceof Response) {
+            $response = $result;
+            return false;
+        }
+
+        return true;
     }
 }
