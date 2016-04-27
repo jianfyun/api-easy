@@ -2,12 +2,12 @@
     "name": "api-easy/api-easy",
     "description": "Simple RESTful API Frame",
     "keywords": ["API", "Frame", "REST"],
-    "version": "0.1.10",
+    "version": "0.1.11",
     "type": "project",
     "require": {
         "php": ">=5.5",
         "ext-SPL": "*",
-        "psr-easy/http-message": ">=0.1.2"
+        "psr-easy/http-message": ">=0.1.3"
     },
     "require-dev": {
         "phpunit/phpunit": ">=4.5.0"
