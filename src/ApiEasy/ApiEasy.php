@@ -156,12 +156,12 @@ class ApiEasy
     {
         $match = $this->route();
 
-        if ($match['callback'] == null) {
+        if ($match['callback'] != null) {
+            $this->dispatch($match);
+        } else {
             $this->response->withStatus(404);
-            return;
         }
 
-        $this->dispatch($match);
         $this->render();
     }
 
