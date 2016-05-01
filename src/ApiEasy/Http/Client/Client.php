@@ -53,7 +53,7 @@ class Client
     /**
      * Return an instance with the provided timeout seconds.
      *
-     * @param  int  $seconds The timeout seconds of HTTP request.
+     * @param  int $seconds The timeout seconds of HTTP request.
      * @access public
      * @return self
      */
@@ -66,13 +66,14 @@ class Client
     /**
      * Send HTTP request and return the response.
      *
-     * @param  RequestInterface  $request The HTTP Request instance.
+     * @param RequestInterface $request The HTTP Request instance.
      * @return ResponseInterface The HTTP Response instance.
      */
     public function send(RequestInterface $request)
     {
         $this->curl = curl_init();
 
+        $this->setVersion($request);
         $this->setMethod($request);
         $this->setUri($request);
         $this->setHeaders($request);
@@ -91,9 +92,30 @@ class Client
     }
 
     /**
+     * Set the version of HTTP request for CURL.
+     *
+     * @param RequestInterface $request The HTTP request instance.
+     */
+    private function setVersion(RequestInterface $request)
+    {
+        $version = $request->getProtocolVersion();
+        $value = CURL_HTTP_VERSION_NONE;
+
+        if ($version == '1.1') {
+            $value = CURL_HTTP_VERSION_1_1;
+        } elseif ($version == '1.0') {
+            $value = CURL_HTTP_VERSION_1_0;
+        }
+
+        if (!curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, $value)) {
+            throw new \RuntimeException('Set HTTP version error: ' . curl_error(), curl_errno());
+        }
+    }
+
+    /**
      * Set the method of HTTP request for CURL.
      *
-     * @param RequestInterface $request
+     * @param RequestInterface $request The HTTP request instance.
      * @throw \UnexpectedValueException if the method is empty.
      * @throw \RuntimeException if set option for CURL fails.
      */
@@ -113,7 +135,7 @@ class Client
     /**
      * Set the URI of HTTP request for CURL.
      *
-     * @param RequestInterface $request
+     * @param RequestInterface $request The HTTP request instance.
      * @throw \UnexpectedValueException if the uri is not instance of UriInterface.
      * @throw \RuntimeException if set option for CURL fails.
      */
@@ -125,7 +147,7 @@ class Client
             throw new \UnexpectedValueException('The URI of request is not instance of UriInterface');
         }
 
-        if (!curl_setopt($this->curl, CURLOPT_URL, (string) $uri)) {
+        if (!curl_setopt($this->curl, CURLOPT_URL, (string)$uri)) {
             throw new \RuntimeException('Set HTTP URL error: ' . curl_error(), curl_errno());
         }
     }
@@ -133,7 +155,7 @@ class Client
     /**
      * Set the headers of HTTP request for CURL.
      *
-     * @param RequestInterface $request
+     * @param RequestInterface $request The HTTP request instance.
      * @throw \RuntimeException if set option for CURL fails.
      */
     private function setHeaders(RequestInterface $request)
@@ -154,7 +176,7 @@ class Client
     /**
      * Set the body of HTTP request for CURL.
      *
-     * @param RequestInterface $request
+     * @param RequestInterface $request The HTTP request instance.
      * @throw \UnexpectedValueException if the body is not instance of StreamInterface.
      * @throw \RuntimeException if set option for CURL fails.
      */
@@ -169,7 +191,7 @@ class Client
                 throw new \UnexpectedValueException('The body of request is not instance of StreamInterface');
             }
 
-            $fields = (string) $body;
+            $fields = (string)$body;
 
             if ($fields != '' && !curl_setopt($this->curl, CURLOPT_POSTFIELDS, $fields)) {
                 throw new \RuntimeException('Set HTTP body error: ' . curl_error(), curl_errno());
@@ -198,7 +220,7 @@ class Client
     /**
      * Build the HTTP response instance from the CURL result.
      *
-     * @param  string   $result The execute result of CURL.
+     * @param string $result The execute result of CURL.
      * @return Response The HTTP response instance.
      */
     private function buildResponse($result)
