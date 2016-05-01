@@ -5,8 +5,10 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
+use PsrEasy\Http\Message\Request;
 use PsrEasy\Http\Message\Response;
 use PsrEasy\Http\Message\Stream;
+use PsrEasy\Http\Message\Uri;
 
 /**
  * Representation of an HTTP client.
@@ -40,6 +42,112 @@ class Client
     protected $timeout = 3;
 
     /**
+     * Send HTTP GET request and return the response instance.
+     *
+     * @param  string            $uri     The request URI.
+     * @param  array             $headers Associative array of request headers.
+     * @return ResponseInterface The HTTP response instance.
+     */
+    public function get($uri, array $headers)
+    {
+        $request = new Request();
+        $request->withProtocolVersion('1.1');
+        $request->withUri(new Uri($uri));
+
+        foreach ($headers as $name => $value) {
+            $request->withHeader($name, $value);
+        }
+
+        return $this->send($request);
+    }
+
+    /**
+     * Send HTTP POST request and return the response instance.
+     *
+     * @param  string            $uri     The request URI.
+     * @param  array             $headers Associative array of request headers.
+     * @param  string            $body    The request body.
+     * @return ResponseInterface The HTTP response instance.
+     * @throw \RuntimeException if writing request body fails.
+     */
+    public function post($uri, array $headers, $body)
+    {
+        $request = new Request();
+        $request->withProtocolVersion('1.1');
+        $request->withUri(new Uri($uri));
+
+        foreach ($headers as $name => $value) {
+            $request->withHeader($name, $value);
+        }
+
+        if ($body != '') {
+            $stream = new Stream('php://memory', 'rw');
+
+            if (strlen($body) != $stream->write($body)) {
+                throw new \RuntimeException('Write body to request error');
+            }
+
+            $stream->close();
+            $request->withBody($stream);
+        }
+
+        return $this->send($request);
+    }
+
+    /**
+     * Send HTTP PUT request and return the response instance.
+     *
+     * @param  string            $uri     The request URI.
+     * @param  array             $headers Associative array of request headers.
+     * @param  string            $body    The request body.
+     * @return ResponseInterface The HTTP response instance.
+     * @throw \RuntimeException if writing request body fails.
+     */
+    public function put($uri, array $headers, $body)
+    {
+        $request = new Request();
+        $request->withProtocolVersion('1.1');
+        $request->withUri(new Uri($uri));
+
+        foreach ($headers as $name => $value) {
+            $request->withHeader($name, $value);
+        }
+
+        if ($body != '') {
+            $stream = new Stream('php://memory', 'rw');
+
+            if (strlen($body) != $stream->write($body)) {
+                throw new \RuntimeException('Write body to request error');
+            }
+
+            $stream->close();
+            $request->withBody($stream);
+        }
+
+        return $this->send($request);
+    }
+
+    /**
+     * Send HTTP DELETE request and return the response instance.
+     *
+     * @param  string            $uri     The request URI.
+     * @param  array             $headers Associative array of request headers.
+     * @return ResponseInterface The HTTP response instance.
+     */
+    public function delete($uri, array $headers)
+    {
+        $request = new Request();
+        $request->withProtocolVersion('1.1');
+        $request->withUri(new Uri($uri));
+
+        foreach ($headers as $name => $value) {
+            $request->withHeader($name, $value);
+        }
+
+        return $this->send($request);
+    }
+
+    /**
      * Retrieves the timeout seconds.
      *
      * @return int
@@ -53,7 +161,7 @@ class Client
     /**
      * Return an instance with the provided timeout seconds.
      *
-     * @param  int $seconds The timeout seconds of HTTP request.
+     * @param  int  $seconds The timeout seconds of HTTP request.
      * @access public
      * @return self
      */
@@ -66,7 +174,7 @@ class Client
     /**
      * Send HTTP request and return the response.
      *
-     * @param RequestInterface $request The HTTP Request instance.
+     * @param  RequestInterface  $request The HTTP Request instance.
      * @return ResponseInterface The HTTP Response instance.
      */
     public function send(RequestInterface $request)
@@ -117,7 +225,7 @@ class Client
      *
      * @param RequestInterface $request The HTTP request instance.
      * @throw \UnexpectedValueException if the method is empty.
-     * @throw \RuntimeException if set option for CURL fails.
+     * @throw \RuntimeException if setting option for CURL fails.
      */
     private function setMethod(RequestInterface $request)
     {
@@ -137,7 +245,7 @@ class Client
      *
      * @param RequestInterface $request The HTTP request instance.
      * @throw \UnexpectedValueException if the uri is not instance of UriInterface.
-     * @throw \RuntimeException if set option for CURL fails.
+     * @throw \RuntimeException if setting option for CURL fails.
      */
     private function setUri(RequestInterface $request)
     {
@@ -147,7 +255,7 @@ class Client
             throw new \UnexpectedValueException('The URI of request is not instance of UriInterface');
         }
 
-        if (!curl_setopt($this->curl, CURLOPT_URL, (string)$uri)) {
+        if (!curl_setopt($this->curl, CURLOPT_URL, (string) $uri)) {
             throw new \RuntimeException('Set HTTP URL error: ' . curl_error(), curl_errno());
         }
     }
@@ -156,7 +264,7 @@ class Client
      * Set the headers of HTTP request for CURL.
      *
      * @param RequestInterface $request The HTTP request instance.
-     * @throw \RuntimeException if set option for CURL fails.
+     * @throw \RuntimeException if setting option for CURL fails.
      */
     private function setHeaders(RequestInterface $request)
     {
@@ -178,7 +286,7 @@ class Client
      *
      * @param RequestInterface $request The HTTP request instance.
      * @throw \UnexpectedValueException if the body is not instance of StreamInterface.
-     * @throw \RuntimeException if set option for CURL fails.
+     * @throw \RuntimeException if setting option for CURL fails.
      */
     private function setBody(RequestInterface $request)
     {
@@ -191,7 +299,7 @@ class Client
                 throw new \UnexpectedValueException('The body of request is not instance of StreamInterface');
             }
 
-            $fields = (string)$body;
+            $fields = (string) $body;
 
             if ($fields != '' && !curl_setopt($this->curl, CURLOPT_POSTFIELDS, $fields)) {
                 throw new \RuntimeException('Set HTTP body error: ' . curl_error(), curl_errno());
@@ -220,7 +328,7 @@ class Client
     /**
      * Build the HTTP response instance from the CURL result.
      *
-     * @param string $result The execute result of CURL.
+     * @param  string   $result The execute result of CURL.
      * @return Response The HTTP response instance.
      */
     private function buildResponse($result)
