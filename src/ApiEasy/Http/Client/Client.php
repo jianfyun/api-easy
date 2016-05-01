@@ -52,6 +52,7 @@ class Client
     {
         $request = new Request();
         $request->withProtocolVersion('1.1');
+        $request->withMethod('GET');
         $request->withUri(new Uri($uri));
 
         foreach ($headers as $name => $value) {
@@ -74,6 +75,7 @@ class Client
     {
         $request = new Request();
         $request->withProtocolVersion('1.1');
+        $request->withMethod('POST');
         $request->withUri(new Uri($uri));
 
         foreach ($headers as $name => $value) {
@@ -87,7 +89,7 @@ class Client
                 throw new \RuntimeException('Write body to request error');
             }
 
-            $stream->close();
+            //$stream->close();
             $request->withBody($stream);
         }
 
@@ -107,6 +109,7 @@ class Client
     {
         $request = new Request();
         $request->withProtocolVersion('1.1');
+        $request->withMethod('PUT');
         $request->withUri(new Uri($uri));
 
         foreach ($headers as $name => $value) {
@@ -120,7 +123,7 @@ class Client
                 throw new \RuntimeException('Write body to request error');
             }
 
-            $stream->close();
+            //$stream->close();
             $request->withBody($stream);
         }
 
@@ -138,6 +141,7 @@ class Client
     {
         $request = new Request();
         $request->withProtocolVersion('1.1');
+        $request->withMethod('DELETE');
         $request->withUri(new Uri($uri));
 
         foreach ($headers as $name => $value) {
@@ -193,10 +197,10 @@ class Client
         $this->info = curl_getinfo($this->curl);
 
         if ($result === false) {
-            throw new \RuntimeException('Execute HTTP request error: ' . curl_error(), curl_errno());
+            throw new \RuntimeException('Execute HTTP request error: ' . curl_error($this->curl));
         }
 
-        return $this->buildResponse($request);
+        return $this->buildResponse($result);
     }
 
     /**
@@ -216,7 +220,7 @@ class Client
         }
 
         if (!curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, $value)) {
-            throw new \RuntimeException('Set HTTP version error: ' . curl_error(), curl_errno());
+            throw new \RuntimeException('Set HTTP version error: ' .  curl_error($this->curl));
         }
     }
 
@@ -236,7 +240,7 @@ class Client
         }
 
         if (!curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, $method)) {
-            throw new \RuntimeException('Set HTTP method error: ' . curl_error(), curl_errno());
+            throw new \RuntimeException('Set HTTP method error: ' . curl_error($this->curl));
         }
     }
 
@@ -256,7 +260,7 @@ class Client
         }
 
         if (!curl_setopt($this->curl, CURLOPT_URL, (string) $uri)) {
-            throw new \RuntimeException('Set HTTP URL error: ' . curl_error(), curl_errno());
+            throw new \RuntimeException('Set HTTP URL error: ' . curl_error($this->curl));
         }
     }
 
@@ -277,7 +281,7 @@ class Client
         }
 
         if (!curl_setopt($this->curl, CURLOPT_HTTPHEADER, $headers)) {
-            throw new \RuntimeException('Set HTTP headers error: ' . curl_error(), curl_errno());
+            throw new \RuntimeException('Set HTTP headers error: ' . curl_error($this->curl));
         }
     }
 
@@ -302,7 +306,7 @@ class Client
             $fields = (string) $body;
 
             if ($fields != '' && !curl_setopt($this->curl, CURLOPT_POSTFIELDS, $fields)) {
-                throw new \RuntimeException('Set HTTP body error: ' . curl_error(), curl_errno());
+                throw new \RuntimeException('Set HTTP body error: ' . curl_error($this->curl));
             }
         }
     }
@@ -313,15 +317,15 @@ class Client
     private function setOthers()
     {
         if (!curl_setopt($this->curl, CURLOPT_RETURNTRANSFER, true)) {
-            throw new \RuntimeException('Set return transfer error: ' . curl_error(), curl_errno());
+            throw new \RuntimeException('Set return transfer error: ' . curl_error($this->curl));
         }
 
         if (!curl_setopt($this->curl, CURLOPT_HEADER, true)) {
-            throw new \RuntimeException('Set return header error: ' . curl_error(), curl_errno());
+            throw new \RuntimeException('Set return header error: ' . curl_error($this->curl));
         }
 
         if (!curl_setopt($this->curl, CURLOPT_TIMEOUT, $this->timeout)) {
-            throw new \RuntimeException('Set timeout error: ' . curl_error(), curl_errno());
+            throw new \RuntimeException('Set timeout error: ' . curl_error($this->curl));
         }
     }
 
@@ -360,7 +364,7 @@ class Client
             throw new \RuntimeException('Write body to response error');
         }
 
-        $stream->close();
+        //$stream->close();
         return $response->withBody($stream);
     }
 }
