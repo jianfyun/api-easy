@@ -89,7 +89,6 @@ class Client
                 throw new \RuntimeException('Write body to request error');
             }
 
-            //$stream->close();
             $request->withBody($stream);
         }
 
@@ -123,7 +122,6 @@ class Client
                 throw new \RuntimeException('Write body to request error');
             }
 
-            //$stream->close();
             $request->withBody($stream);
         }
 
@@ -358,13 +356,18 @@ class Client
             $response->withAddedHeader(trim($name), trim($value));
         }
 
-        $stream = new Stream('php://memory', 'rw');
+        $bodyPart = substr($result, $this->info['header_size']);
 
-        if (!$stream->write(substr($result, $this->info['header_size']))) {
-            throw new \RuntimeException('Write body to response error');
+        if ($bodyPart != '') {
+            $stream = new Stream('php://memory', 'rw');
+
+            if (strlen($bodyPart) != $stream->write($bodyPart)) {
+                throw new \RuntimeException('Write body to response error');
+            }
+
+            $response->withBody($stream);
         }
 
-        //$stream->close();
-        return $response->withBody($stream);
+        return $response;
     }
 }
