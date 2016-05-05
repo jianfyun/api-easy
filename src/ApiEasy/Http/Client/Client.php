@@ -297,6 +297,10 @@ class Client
         if ($method == 'POST' || $method == 'PUT') {
             $body = $request->getBody();
 
+            if (empty($body)) {
+                return;
+            }
+
             if (!$body instanceof StreamInterface) {
                 throw new \UnexpectedValueException('The body of request is not instance of StreamInterface');
             }

@@ -7,7 +7,7 @@ use PsrEasy\Http\Message\Stream;
 /**
  * Representation of an outgoing, server-side response.
  *
- * @uses PsrEasy\Http\Message\Response
+ * @uses    PsrEasy\Http\Message\Response
  * @package ApiEasy\Http\Message
  */
 class Response extends PsrResponse
@@ -15,13 +15,17 @@ class Response extends PsrResponse
     /**
      * Return an instance with body in JSON format.
      *
-     * @param  array $value The value to be converted to JSON;
+     * @param  array|object $value The value to be converted to JSON;
      * @access public
      * @return self
-     * @throw \UnexpectedValueException if JSON encode fails.
+     * @throw  \UnexpectedValueException if JSON encode fails.
      */
-    public function withJson(array $value)
+    public function withJson($value)
     {
+        if (!is_array($value) || !is_object($value)) {
+            throw new \InvalidArgumentException('The value must be array or object');
+        }
+
         $json = json_encode($value);
 
         if ($json == false) {
