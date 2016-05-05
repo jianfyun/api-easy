@@ -44,16 +44,16 @@ class Client
     /**
      * Send HTTP GET request and return the response instance.
      *
-     * @param  string            $uri     The request URI.
-     * @param  array             $headers Associative array of request headers.
+     * @param  string $target  The request target.
+     * @param  array  $headers Associative array of request headers.
      * @return ResponseInterface The HTTP response instance.
      */
-    public function get($uri, array $headers)
+    public function get($target, array $headers)
     {
         $request = new Request();
         $request->withProtocolVersion('1.1');
         $request->withMethod('GET');
-        $request->withUri(new Uri($uri));
+        $request->withRequestTarget($target);
 
         foreach ($headers as $name => $value) {
             $request->withHeader($name, $value);
@@ -65,18 +65,18 @@ class Client
     /**
      * Send HTTP POST request and return the response instance.
      *
-     * @param  string            $uri     The request URI.
-     * @param  array             $headers Associative array of request headers.
-     * @param  string            $body    The request body.
+     * @param  string $target  The request target.
+     * @param  array  $headers Associative array of request headers.
+     * @param  string $body    The request body.
      * @return ResponseInterface The HTTP response instance.
      * @throw \RuntimeException if writing request body fails.
      */
-    public function post($uri, array $headers, $body)
+    public function post($target, array $headers, $body)
     {
         $request = new Request();
         $request->withProtocolVersion('1.1');
         $request->withMethod('POST');
-        $request->withUri(new Uri($uri));
+        $request->withRequestTarget($target);
 
         foreach ($headers as $name => $value) {
             $request->withHeader($name, $value);
@@ -98,18 +98,18 @@ class Client
     /**
      * Send HTTP PUT request and return the response instance.
      *
-     * @param  string            $uri     The request URI.
-     * @param  array             $headers Associative array of request headers.
-     * @param  string            $body    The request body.
+     * @param  string $target  The request target.
+     * @param  array  $headers Associative array of request headers.
+     * @param  string $body    The request body.
      * @return ResponseInterface The HTTP response instance.
      * @throw \RuntimeException if writing request body fails.
      */
-    public function put($uri, array $headers, $body)
+    public function put($target, array $headers, $body)
     {
         $request = new Request();
         $request->withProtocolVersion('1.1');
         $request->withMethod('PUT');
-        $request->withUri(new Uri($uri));
+        $request->withRequestTarget($target);
 
         foreach ($headers as $name => $value) {
             $request->withHeader($name, $value);
@@ -131,16 +131,16 @@ class Client
     /**
      * Send HTTP DELETE request and return the response instance.
      *
-     * @param  string            $uri     The request URI.
-     * @param  array             $headers Associative array of request headers.
+     * @param  string $target  The request target.
+     * @param  array  $headers Associative array of request headers.
      * @return ResponseInterface The HTTP response instance.
      */
-    public function delete($uri, array $headers)
+    public function delete($target, array $headers)
     {
         $request = new Request();
         $request->withProtocolVersion('1.1');
         $request->withMethod('DELETE');
-        $request->withUri(new Uri($uri));
+        $request->withRequestTarget($target);
 
         foreach ($headers as $name => $value) {
             $request->withHeader($name, $value);
@@ -163,7 +163,7 @@ class Client
     /**
      * Return an instance with the provided timeout seconds.
      *
-     * @param  int  $seconds The timeout seconds of HTTP request.
+     * @param  int $seconds The timeout seconds of HTTP request.
      * @access public
      * @return self
      */
@@ -176,7 +176,7 @@ class Client
     /**
      * Send HTTP request and return the response.
      *
-     * @param  RequestInterface  $request The HTTP Request instance.
+     * @param  RequestInterface $request The HTTP Request instance.
      * @return ResponseInterface The HTTP Response instance.
      */
     public function send(RequestInterface $request)
@@ -185,7 +185,7 @@ class Client
 
         $this->setVersion($request);
         $this->setMethod($request);
-        $this->setUri($request);
+        $this->setTarget($request);
         $this->setHeaders($request);
         $this->setBody($request);
         $this->setOthers();
@@ -218,7 +218,7 @@ class Client
         }
 
         if (!curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, $value)) {
-            throw new \RuntimeException('Set HTTP version error: ' .  curl_error($this->curl));
+            throw new \RuntimeException('Set HTTP version error: ' . curl_error($this->curl));
         }
     }
 
@@ -243,22 +243,22 @@ class Client
     }
 
     /**
-     * Set the URI of HTTP request for CURL.
+     * Set the target of HTTP request for CURL.
      *
      * @param RequestInterface $request The HTTP request instance.
-     * @throw \UnexpectedValueException if the uri is not instance of UriInterface.
+     * @throw \UnexpectedValueException if the request target is empty.
      * @throw \RuntimeException if setting option for CURL fails.
      */
-    private function setUri(RequestInterface $request)
+    private function setTarget(RequestInterface $request)
     {
-        $uri = $request->getUri();
+        $target = $request->getRequestTarget();
 
-        if (!$uri instanceof UriInterface) {
-            throw new \UnexpectedValueException('The URI of request is not instance of UriInterface');
+        if (empty($target)) {
+            throw new \UnexpectedValueException('The request target is empty');
         }
 
-        if (!curl_setopt($this->curl, CURLOPT_URL, (string) $uri)) {
-            throw new \RuntimeException('Set HTTP URL error: ' . curl_error($this->curl));
+        if (!curl_setopt($this->curl, CURLOPT_URL, $target)) {
+            throw new \RuntimeException('Set HTTP request target error: ' . curl_error($this->curl));
         }
     }
 
@@ -301,7 +301,7 @@ class Client
                 throw new \UnexpectedValueException('The body of request is not instance of StreamInterface');
             }
 
-            $fields = (string) $body;
+            $fields = (string)$body;
 
             if ($fields != '' && !curl_setopt($this->curl, CURLOPT_POSTFIELDS, $fields)) {
                 throw new \RuntimeException('Set HTTP body error: ' . curl_error($this->curl));
@@ -330,7 +330,7 @@ class Client
     /**
      * Build the HTTP response instance from the CURL result.
      *
-     * @param  string   $result The execute result of CURL.
+     * @param  string $result The execute result of CURL.
      * @return Response The HTTP response instance.
      */
     private function buildResponse($result)
