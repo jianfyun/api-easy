@@ -159,7 +159,7 @@ class ApiEasy
         if ($match['callback'] != null) {
             $this->dispatch($match);
         } else {
-            $this->response->withStatus(404);
+            $this->response->withStatus(Response::HTTP_NOT_FOUND);
         }
 
         $this->render();

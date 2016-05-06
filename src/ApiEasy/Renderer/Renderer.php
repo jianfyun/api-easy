@@ -5,15 +5,15 @@ use ApiEasy\Http\Message\Response;
 
 /**
  * Representation of an HTTP response renderer.
- * 
- * @uses RendererInterface
+ *
+ * @uses    RendererInterface
  * @package ApiEasy\Renderer
  */
 class Renderer implements RendererInterface
 {
     /**
      * Render the HTTP response.
-     * 
+     *
      * @param Response $response The HTTP Response instance.
      * @access public
      * @return void
@@ -21,8 +21,8 @@ class Renderer implements RendererInterface
     public function render(Response $response)
     {
         $version = $response->getProtocolVersion();
-        $status  = $response->getStatusCode();
-        $phrase  = $response->getReasonPhrase();
+        $status = $response->getStatusCode();
+        $phrase = $response->getReasonPhrase();
         header("HTTP/$version $status $phrase");
 
         foreach ($response->getHeaders() as $name => $values) {

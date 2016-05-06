@@ -4,7 +4,7 @@ namespace ApiEasy\Router;
 /**
  * Representation of an URI router.
  *
- * @uses RouterInterface
+ * @uses    RouterInterface
  * @package ApiEasy\Router
  */
 class Router implements RouterInterface
@@ -41,8 +41,8 @@ class Router implements RouterInterface
      */
     public function __construct()
     {
-        $this->exact    = [];
-        $this->fuzzy    = [];
+        $this->exact = [];
+        $this->fuzzy = [];
         $this->asterisk = [];
     }
 
@@ -69,7 +69,7 @@ class Router implements RouterInterface
             return $this;
         }
 
-        $prefix  = substr($path, 0, $varPos);
+        $prefix = substr($path, 0, $varPos);
         $pattern = str_replace('{', '(?P<', $path);
         $pattern = str_replace('}', '>.+?)', $pattern);
         $this->fuzzy[$method][$prefix][$pattern] = $callback;
@@ -126,9 +126,9 @@ class Router implements RouterInterface
         $match = ['callback' => null, 'params' => []];
 
         foreach ($rules as $pattern => $callback) {
-            $params   = [];
+            $params = [];
             $captures = [];
-            $varNum   = preg_match_all("#^{$pattern}$#", $path, $captures);
+            $varNum = preg_match_all("#^{$pattern}$#", $path, $captures);
 
             if (0 == $varNum) {
                 continue;
@@ -141,7 +141,7 @@ class Router implements RouterInterface
             }
 
             $match['callback'] = $callback;
-            $match['params']   = $params;
+            $match['params'] = $params;
         }
 
         return $match;

@@ -8,8 +8,8 @@ use ApiEasy\Http\Message\Response;
 /**
  * Representation of a callback dispatcher.
  *
- * @uses DispatcherInterface
- * @package
+ * @uses    DispatcherInterface
+ * @package ApiEasy\Dispatcher
  */
 class Dispatcher implements DispatcherInterface
 {
@@ -20,7 +20,7 @@ class Dispatcher implements DispatcherInterface
      * @param  string $namespace Namespace for the callback.
      * @access public
      * @return mixed  The normalized callback.
-     * @throw \InvalidArgumentException if the callback is invalid.
+     * @throw  \InvalidArgumentException if the callback is invalid.
      */
     public function normalize($callback, $namespace = '')
     {
@@ -41,14 +41,14 @@ class Dispatcher implements DispatcherInterface
      * @param  Response $response The HTTP Response instance.
      * @access protected
      * @return void
-     * @throw \BadFunctionCallException if the callback is not valid function.
-     * @throw \BadMethodCallException if the callback is not valid method.
+     * @throw  \BadFunctionCallException if the callback is not valid function.
+     * @throw  \BadMethodCallException if the callback is not valid method.
      */
     public function dispatch($callback, Request $request, Response $response)
     {
         if (is_array($callback) && count($callback) == 2) {
             if (is_string($callback[0])) {
-                $className  = $callback[0];
+                $className = $callback[0];
                 $controller = new $className();
             }
 
@@ -78,7 +78,7 @@ class Dispatcher implements DispatcherInterface
      * @param  Response $response The HTTP Response instance.
      * @access protected
      * @return bool     Return ture to process the remaining methods; otherwise, skip the remaining methods.
-     * @throw \UnexpectedValueException if the return of the callback is not instance of Response.
+     * @throw  \UnexpectedValueException if the return of the callback is not instance of Response.
      */
     protected function execute(array $callback, Request $request, Response $response)
     {
