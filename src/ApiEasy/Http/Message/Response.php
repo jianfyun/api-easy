@@ -22,7 +22,7 @@ class Response extends PsrResponse
      */
     public function withJson($value)
     {
-        if (!is_array($value) || !is_object($value)) {
+        if (!is_array($value) && !is_object($value)) {
             throw new \InvalidArgumentException('The value must be array or object');
         }
 
