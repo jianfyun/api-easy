@@ -69,7 +69,6 @@ class ApiEasy
      * __construct
      *
      * @access public
-     * @return void
      */
     public function __construct()
     {
@@ -122,7 +121,7 @@ class ApiEasy
     /**
      * Register callback for HTTP DELETE method and the provided URI path.
      *
-     * @param  string $path     The URI path.
+     * @param  string $uri      The URI path.
      * @param  mixed  $callback Callback.
      * @access public
      * @return void
@@ -135,7 +134,7 @@ class ApiEasy
     /**
      * Register callback for HTTP OPTIONS method and the provided URI path.
      *
-     * @param  string $path     The URI path.
+     * @param  string $uri      The URI path.
      * @param  mixed  $callback Callback.
      * @access public
      * @return void

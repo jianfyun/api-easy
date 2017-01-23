@@ -37,7 +37,6 @@ class Router implements RouterInterface
      * __construct
      *
      * @access public
-     * @return void
      */
     public function __construct()
     {

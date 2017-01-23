@@ -47,10 +47,12 @@ class Dispatcher implements DispatcherInterface
     public function dispatch($callback, Request $request, Response $response)
     {
         if (is_array($callback) && count($callback) == 2) {
-            if (is_string($callback[0])) {
-                $className = $callback[0];
-                $controller = new $className();
+            if (!is_string($callback[0]) || !is_string($callback[1])) {
+                throw new \BadMethodCallException('Both class name and method name of Callback must be string');
             }
+
+            $className  = $callback[0];
+            $controller = new $className();
 
             if (!$controller instanceof ControllerInterface) {
                 throw new \BadMethodCallException("$className is not instance of ControllerInterface");
@@ -64,7 +66,7 @@ class Dispatcher implements DispatcherInterface
             $this->execute([$controller, $callback[1]], $request, $response) &&
             $this->execute([$controller, 'postDispatch'], $request, $response);
         } elseif ($callback instanceof \Closure) {
-            $response = call_user_func_array($callback, [$request, $response]);
+            call_user_func_array($callback, [$request, $response]);
         } else {
             throw new \BadFunctionCallException('Callback is neither Controller method nor Closure');
         }
