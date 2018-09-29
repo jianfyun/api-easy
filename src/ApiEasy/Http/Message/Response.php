@@ -40,4 +40,34 @@ class Response extends PsrResponse
         $this->withBody($stream);
         return $this;
     }
+    
+    /**
+     * Return an instance with body in JSONP format.
+     *
+     * @param  string       $callback The callback string;
+     * @param  array|object $value    The value to be converted to JSON;
+     * @access public
+     * @return self
+     * @throw  \UnexpectedValueException if JSON encode fails.
+     */
+    public function withJsonp($callback, $value)
+    {
+        if (!is_array($value) && !is_object($value)) {
+            throw new \InvalidArgumentException('The value must be array or object');
+        }
+
+        $json = json_encode($value);
+
+        if ($json == false) {
+            $message = 'JSON encode error: ' . json_last_error() . ', msg: ' . json_last_error_msg();
+            throw new \UnexpectedValueException($message);
+        }
+
+        $this->withHeader('Content-Type', 'application/json');
+        $stream = new Stream('php://memory', 'rw');
+        $stream->write(" $callback($json)");
+        $stream->rewind();
+        $this->withBody($stream);
+        return $this;
+    }
 }
